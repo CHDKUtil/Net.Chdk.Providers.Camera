@@ -1,5 +1,4 @@
 ﻿using Net.Chdk.Model.Camera;
-using Net.Chdk.Model.CameraModel;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +13,7 @@ namespace Net.Chdk.Providers.CameraModel
             CameraModelProviders = cameraModelProviders;
         }
 
-        public CameraModelInfo[] GetCameraModels(CameraInfo cameraInfo)
+        public CameraModelsInfo GetCameraModels(CameraInfo cameraInfo)
         {
             return CameraModelProviders
                 .Select(p => p.GetCameraModels(cameraInfo))
