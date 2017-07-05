@@ -38,9 +38,28 @@ namespace Net.Chdk.Providers.CameraModel
 
         protected override Dictionary<string, uint> GetVersions(PsCameraModelData model)
         {
-            return model.Revisions.ToDictionary(
-                kvp => kvp.Value.Revision,
-                kvp => Convert.ToUInt32(kvp.Key, 16));
+            return model.Revisions.ToDictionary(GetKey, GetValue);
+        }
+
+        private static string GetKey(KeyValuePair<string, RevisionData> kvp)
+        {
+            var revision = GetValue(kvp);
+            return GetFirmwareRevision(revision);
+        }
+
+        private static uint GetValue(KeyValuePair<string, RevisionData> kvp)
+        {
+            return Convert.ToUInt32(kvp.Key, 16);
+        }
+
+        private static string GetFirmwareRevision(uint revision)
+        {
+            return new string(new[] {
+                (char)(((revision >> 24) & 0x0f) + 0x30),
+                (char)(((revision >> 20) & 0x0f) + 0x30),
+                (char)(((revision >> 16) & 0x0f) + 0x30),
+                (char)(((revision >>  8) & 0x7f) + 0x60)
+            });
         }
     }
 }
