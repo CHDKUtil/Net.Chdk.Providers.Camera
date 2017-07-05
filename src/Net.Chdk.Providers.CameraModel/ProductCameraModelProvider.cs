@@ -85,6 +85,7 @@ namespace Net.Chdk.Providers.CameraModel
             {
                 Models = models,
                 CardType = camera.Card?.Type,
+                CardSubtype = camera.Card?.Subtype,
                 BootFileSystem = camera.Boot.Fs,
             };
         }
