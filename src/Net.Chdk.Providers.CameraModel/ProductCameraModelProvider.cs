@@ -14,7 +14,7 @@ using System.Threading;
 namespace Net.Chdk.Providers.CameraModel
 {
     public abstract class ProductCameraModelProvider<TCamera, TModel, TVersion> : IProductCameraProvider, IProductCameraModelProvider, IProductCameraModelDetector
-        where TCamera : CameraData<TModel>
+        where TCamera : CameraData<TCamera, TModel>
         where TModel : CameraModelData
     {
         protected sealed class ReverseCameraData
