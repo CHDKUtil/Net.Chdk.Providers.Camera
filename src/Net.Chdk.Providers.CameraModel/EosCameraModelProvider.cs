@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Net.Chdk.Providers.CameraModel
 {
-    public abstract class EosCameraModelProvider : ProductCameraModelProvider<EosCameraData, EosCameraModelData, EosCardData, Version>
+    public abstract class EosCameraModelProvider : ProductCameraModelProvider<EosCameraData, EosCameraModelData, Version>
     {
         protected EosCameraModelProvider(string productName)
             : base(productName)

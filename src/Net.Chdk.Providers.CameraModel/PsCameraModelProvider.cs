@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Net.Chdk.Providers.CameraModel
 {
-    public abstract class PsCameraModelProvider : ProductCameraModelProvider<PsCameraData, PsCameraModelData, PsCardData, uint>
+    public abstract class PsCameraModelProvider : ProductCameraModelProvider<PsCameraData, PsCameraModelData, uint>
     {
         protected PsCameraModelProvider(string productName)
             : base(productName)
