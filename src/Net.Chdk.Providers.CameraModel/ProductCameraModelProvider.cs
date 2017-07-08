@@ -211,8 +211,17 @@ namespace Net.Chdk.Providers.CameraModel
             {
                 ModelId = Convert.ToUInt32(key, 16),
                 Versions = GetVersions(model),
-                Encoding = camera.Encoding,
+                Encoding = GetEncoding(camera),
                 Models = model.Names,
+            };
+        }
+
+        private static SoftwareEncodingInfo GetEncoding(TCamera camera)
+        {
+            return new SoftwareEncodingInfo
+            {
+                Name = camera.Encoding.Name,
+                Data = camera.Encoding.Data,
             };
         }
 
