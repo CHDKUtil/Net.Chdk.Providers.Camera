@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Net.Chdk.Meta.Model.Camera.Ps;
 using Net.Chdk.Model.Camera;
-using Net.Chdk.Model.CameraModel;
 using Net.Chdk.Model.Software;
 using System;
 using System.Collections.Generic;
@@ -43,27 +42,10 @@ namespace Net.Chdk.Providers.Camera
             return reverse.Revisions.TryGetValue(camera.Revision, out revision);
         }
 
-        protected override CameraModelsInfo GetCameraModels(PsCameraData camera, CameraModelInfo[] models)
-        {
-            var cameraModels = base.GetCameraModels(camera, models);
-            cameraModels.AltButton = camera.Alt?.Button;
-            cameraModels.AltButtons = camera.Alt?.Buttons;
-            return cameraModels;
-        }
-
-        protected override CameraModelsInfo GetCameraModels(PsReverseCameraData camera, uint revision)
-        {
-            var cameraModels = base.GetCameraModels(camera, revision);
-            cameraModels.AltButton = camera.Alt?.Button;
-            cameraModels.AltButtons = camera.Alt?.Buttons;
-            return cameraModels;
-        }
-
         protected override PsReverseCameraData CreateReverseCamera(string key, PsCameraData camera, PsCameraModelData model)
         {
             var reverse = base.CreateReverseCamera(key, camera, model);
             reverse.Revisions = GetRevisions(model);
-            reverse.Alt = camera.Alt;
             return reverse;
         }
 
@@ -73,6 +55,15 @@ namespace Net.Chdk.Providers.Camera
             {
                 Name = camera.Encoding.Name,
                 Data = camera.Encoding.Data,
+            };
+        }
+
+        protected override AltInfo GetAlt(PsCameraData camera)
+        {
+            return new AltInfo
+            {
+                Button = camera.Alt.Button,
+                Buttons = camera.Alt.Buttons,
             };
         }
 

@@ -53,6 +53,13 @@ namespace Net.Chdk.Providers.Camera
                 : null;
         }
 
+        public AltInfo GetAlt(SoftwareCameraInfo cameraInfo)
+        {
+            return GetCameraModel(cameraInfo, out TReverse reverse)
+                ? reverse.Alt
+                : null;
+        }
+
         public CameraModelsInfo GetCameraModels(CameraInfo cameraInfo)
         {
             var camera = GetCamera(cameraInfo);
@@ -179,11 +186,14 @@ namespace Net.Chdk.Providers.Camera
             {
                 ModelId = Convert.ToUInt32(key, 16),
                 Encoding = GetEncoding(camera),
+                Alt = GetAlt(camera),
                 Models = model.Names,
             };
         }
 
         protected abstract SoftwareEncodingInfo GetEncoding(TCamera camera);
+
+        protected abstract AltInfo GetAlt(TCamera camera);
 
         #endregion
     }

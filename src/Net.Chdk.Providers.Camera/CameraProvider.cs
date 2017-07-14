@@ -46,6 +46,13 @@ namespace Net.Chdk.Providers.Camera
                 .GetEncoding(cameraInfo);
         }
 
+        public AltInfo GetAlt(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
+        {
+            var productName = productInfo?.Name;
+            return GetProvider(productName)?
+                .GetAlt(cameraInfo);
+        }
+
         protected override IEnumerable<string> GetNames()
         {
             return ProductProvider.GetProductNames();

@@ -59,6 +59,11 @@ namespace Net.Chdk.Providers.Camera
             return EmptyEncoding;
         }
 
+        protected override AltInfo GetAlt(EosCameraData camera)
+        {
+            return AltInfo.Empty;
+        }
+
         private static Dictionary<string, Version> GetVersions(EosCameraModelData model)
         {
             return model.Versions.ToDictionary(GetKey, GetValue);
