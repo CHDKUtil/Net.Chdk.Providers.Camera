@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.3.2</Version>
+    <Version>0.3.3</Version>
     <Product>CHIMP</Product>
     <Copyright>Copyright © 2017 Dmitry Shechtman</Copyright>
   </PropertyGroup>
