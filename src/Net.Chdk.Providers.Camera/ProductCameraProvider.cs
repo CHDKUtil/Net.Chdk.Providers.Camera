@@ -10,19 +10,12 @@ using System.Linq;
 
 namespace Net.Chdk.Providers.Camera
 {
-    abstract class ProductCameraProvider<TCamera, TModel, TCard, TVersion> : DataProvider<Dictionary<string, TCamera>>, IProductCameraProvider
+    abstract class ProductCameraProvider<TCamera, TModel, TCard, TReverse, TVersion> : DataProvider<Dictionary<string, TCamera>>, IProductCameraProvider
         where TCamera : CameraData<TCamera, TModel, TCard>
         where TModel : CameraModelData
         where TCard : CardData
+        where TReverse : ReverseCameraData, new()
     {
-        protected sealed class ReverseCameraData
-        {
-            public string[] Models { get; set; }
-            public Dictionary<string, TVersion> Versions { get; set; }
-            public uint ModelId { get; set; }
-            public SoftwareEncodingInfo Encoding { get; set; }
-        }
-
         private const string DataFileName = "cameras.json";
 
         private string ProductName { get; }
@@ -31,7 +24,7 @@ namespace Net.Chdk.Providers.Camera
             : base(logger)
         {
             ProductName = productName;
-            _reverseCameras = new Lazy<Dictionary<string, ReverseCameraData>>(GetReverseCameras);
+            _reverseCameras = new Lazy<Dictionary<string, TReverse>>(GetReverseCameras);
         }
 
         public SoftwareCameraInfo GetCamera(CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
@@ -55,7 +48,7 @@ namespace Net.Chdk.Providers.Camera
 
         public SoftwareEncodingInfo GetEncoding(SoftwareCameraInfo cameraInfo)
         {
-            return GetCameraModel(cameraInfo, out ReverseCameraData camera)
+            return GetCameraModel(cameraInfo, out TReverse camera)
                 ? camera.Encoding
                 : null;
         }
@@ -88,18 +81,18 @@ namespace Net.Chdk.Providers.Camera
             };
         }
 
-        public CameraModelsInfo GetCameraModels(SoftwareCameraInfo cameraInfo)
+        public CameraModelsInfo GetCameraModels(SoftwareCameraInfo camera)
         {
-            if (!GetCameraModel(cameraInfo, out ReverseCameraData camera))
+            if (!GetCameraModel(camera, out TReverse reverse))
                 return null;
 
-            if (!GetCamera(camera, cameraInfo, out TVersion version))
+            if (!GetCamera(reverse, camera, out TVersion version))
                 return null;
 
-            return GetCameraModels(camera, version);
+            return GetCameraModels(reverse, version);
         }
 
-        protected virtual CameraModelsInfo GetCameraModels(ReverseCameraData camera, TVersion version)
+        protected virtual CameraModelsInfo GetCameraModels(TReverse camera, TVersion version)
         {
             return new CameraModelsInfo
             {
@@ -120,11 +113,9 @@ namespace Net.Chdk.Providers.Camera
 
         protected abstract bool IsInvalid(CameraInfo cameraInfo);
 
-        protected abstract CanonInfo CreateCanonInfo(ReverseCameraData camera, TVersion version);
+        protected abstract CanonInfo CreateCanonInfo(TReverse camera, TVersion version);
 
-        protected abstract Dictionary<string, TVersion> GetVersions(TModel model);
-
-        private static BaseInfo CreateBaseInfo(ReverseCameraData camera)
+        private static BaseInfo CreateBaseInfo(TReverse camera)
         {
             return new BaseInfo
             {
@@ -133,10 +124,7 @@ namespace Net.Chdk.Providers.Camera
             };
         }
 
-        private bool GetCamera(ReverseCameraData value, SoftwareCameraInfo camera, out TVersion version)
-        {
-            return value.Versions.TryGetValue(camera.Revision, out version);
-        }
+        protected abstract bool GetCamera(TReverse reverse, SoftwareCameraInfo camera, out TVersion version);
 
         private TCamera GetCamera(CameraInfo cameraInfo)
         {
@@ -150,14 +138,14 @@ namespace Net.Chdk.Providers.Camera
             return camera;
         }
 
-        private bool GetCameraModel(SoftwareCameraInfo cameraInfo, out ReverseCameraData camera)
+        protected bool GetCameraModel(SoftwareCameraInfo camera, out TReverse reverse)
         {
-            camera = null;
+            reverse = null;
 
-            if (cameraInfo == null)
+            if (camera == null)
                 return false;
 
-            return ReverseCameras.TryGetValue(cameraInfo.Platform, out camera);
+            return ReverseCameras.TryGetValue(camera.Platform, out reverse);
         }
 
         protected override string GetFilePath()
@@ -167,13 +155,13 @@ namespace Net.Chdk.Providers.Camera
 
         #region ReverseCameras
 
-        private readonly Lazy<Dictionary<string, ReverseCameraData>> _reverseCameras;
+        private readonly Lazy<Dictionary<string, TReverse>> _reverseCameras;
 
-        private Dictionary<string, ReverseCameraData> ReverseCameras => _reverseCameras.Value;
+        private Dictionary<string, TReverse> ReverseCameras => _reverseCameras.Value;
 
-        private Dictionary<string, ReverseCameraData> GetReverseCameras()
+        private Dictionary<string, TReverse> GetReverseCameras()
         {
-            var reverseCameras = new Dictionary<string, ReverseCameraData>();
+            var reverseCameras = new Dictionary<string, TReverse>();
             foreach (var kvp in Data)
             {
                 foreach (var model in kvp.Value.Models)
@@ -185,25 +173,17 @@ namespace Net.Chdk.Providers.Camera
             return reverseCameras;
         }
 
-        private ReverseCameraData CreateReverseCamera(string key, TCamera camera, TModel model)
+        protected virtual TReverse CreateReverseCamera(string key, TCamera camera, TModel model)
         {
-            return new ReverseCameraData
+            return new TReverse
             {
                 ModelId = Convert.ToUInt32(key, 16),
-                Versions = GetVersions(model),
                 Encoding = GetEncoding(camera),
                 Models = model.Names,
             };
         }
 
-        private static SoftwareEncodingInfo GetEncoding(TCamera camera)
-        {
-            return new SoftwareEncodingInfo
-            {
-                Name = camera.Encoding.Name,
-                Data = camera.Encoding.Data,
-            };
-        }
+        protected abstract SoftwareEncodingInfo GetEncoding(TCamera camera);
 
         #endregion
     }

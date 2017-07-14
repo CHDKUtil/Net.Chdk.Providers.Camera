@@ -1,14 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using Net.Chdk.Meta.Model.Camera.Eos;
 using Net.Chdk.Model.Camera;
+using Net.Chdk.Model.Software;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Net.Chdk.Providers.Camera
 {
-    sealed class EosProductCameraProvider : ProductCameraProvider<EosCameraData, EosCameraModelData, EosCardData, Version>
+    sealed class EosProductCameraProvider : ProductCameraProvider<EosCameraData, EosCameraModelData, EosCardData, EosReverseCameraData, Version>
     {
+        private static readonly SoftwareEncodingInfo EmptyEncoding = new SoftwareEncodingInfo
+        {
+            Name = string.Empty
+        };
+
         public EosProductCameraProvider(string productName, ILoggerFactory loggerFactory)
             : base(productName, loggerFactory.CreateLogger<EosProductCameraProvider>())
         {
@@ -27,7 +33,7 @@ namespace Net.Chdk.Providers.Camera
             return cameraInfo.Canon?.ModelId == null || cameraInfo.Canon?.FirmwareVersion == null;
         }
 
-        protected override CanonInfo CreateCanonInfo(ReverseCameraData camera, Version version)
+        protected override CanonInfo CreateCanonInfo(EosReverseCameraData camera, Version version)
         {
             return new CanonInfo
             {
@@ -36,7 +42,24 @@ namespace Net.Chdk.Providers.Camera
             };
         }
 
-        protected override Dictionary<string, Version> GetVersions(EosCameraModelData model)
+        protected override bool GetCamera(EosReverseCameraData reverse, SoftwareCameraInfo camera, out Version version)
+        {
+            return reverse.Versions.TryGetValue(camera.Revision, out version);
+        }
+
+        protected override EosReverseCameraData CreateReverseCamera(string key, EosCameraData camera, EosCameraModelData model)
+        {
+            var reverse = base.CreateReverseCamera(key, camera, model);
+            reverse.Versions = GetVersions(model);
+            return reverse;
+        }
+
+        protected override SoftwareEncodingInfo GetEncoding(EosCameraData camera)
+        {
+            return EmptyEncoding;
+        }
+
+        private static Dictionary<string, Version> GetVersions(EosCameraModelData model)
         {
             return model.Versions.ToDictionary(GetKey, GetValue);
         }
