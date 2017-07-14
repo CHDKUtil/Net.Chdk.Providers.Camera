@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace Net.Chdk.Providers.Camera
 {
@@ -81,12 +80,17 @@ namespace Net.Chdk.Providers.Camera
                     Names = camera.Models[i].Names
                 };
             }
+            return GetCameraModels(camera, models);
+        }
+
+        protected virtual CameraModelsInfo GetCameraModels(TCamera camera, CameraModelInfo[] models)
+        {
             return new CameraModelsInfo
             {
                 Models = models,
                 CardType = camera.Card?.Type,
                 CardSubtype = camera.Card?.Subtype,
-                BootFileSystem = camera.Boot.Fs,
+                BootFileSystem = camera.Boot?.Fs,
             };
         }
 
@@ -98,6 +102,11 @@ namespace Net.Chdk.Providers.Camera
             if (!GetCamera(camera, cameraInfo, out TVersion version))
                 return null;
 
+            return GetCameraModels(camera, version);
+        }
+
+        protected virtual CameraModelsInfo GetCameraModels(ReverseCameraData camera, TVersion version)
+        {
             return new CameraModelsInfo
             {
                 Info = new CameraInfo

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Net.Chdk.Meta.Model.Camera.Ps;
 using Net.Chdk.Model.Camera;
+using Net.Chdk.Model.CameraModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,14 @@ namespace Net.Chdk.Providers.Camera
         protected override Dictionary<string, uint> GetVersions(PsCameraModelData model)
         {
             return model.Revisions.ToDictionary(GetKey, GetValue);
+        }
+
+        protected override CameraModelsInfo GetCameraModels(PsCameraData camera, CameraModelInfo[] models)
+        {
+            var cameraModels = base.GetCameraModels(camera, models);
+            cameraModels.AltButton = camera.Alt?.Button;
+            cameraModels.AltButtons = camera.Alt?.Buttons;
+            return cameraModels;
         }
 
         private static string GetKey(KeyValuePair<string, RevisionData> kvp)
