@@ -11,13 +11,11 @@ namespace Net.Chdk.Providers.Camera
 {
     sealed class CameraProvider : ProviderResolver<IProductCameraProvider>, ICameraProvider
     {
-        private ILogger Logger { get; }
         private IProductProvider ProductProvider { get; }
 
         public CameraProvider(IProductProvider productProvider, ILoggerFactory loggerFactory)
             : base(loggerFactory)
         {
-            Logger = loggerFactory.CreateLogger<CameraProvider>();
             ProductProvider = productProvider;
         }
 
