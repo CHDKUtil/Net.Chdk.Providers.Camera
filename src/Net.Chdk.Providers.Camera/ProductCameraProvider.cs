@@ -1,19 +1,17 @@
-﻿using Net.Chdk.Detectors.CameraModel;
+﻿using Microsoft.Extensions.Logging;
 using Net.Chdk.Meta.Model.Camera;
 using Net.Chdk.Model.Camera;
 using Net.Chdk.Model.CameraModel;
 using Net.Chdk.Model.Software;
-using Net.Chdk.Providers.Software;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Net.Chdk.Providers.CameraModel
+namespace Net.Chdk.Providers.Camera
 {
-    public abstract class ProductCameraModelProvider<TCamera, TModel, TCard, TVersion> : IProductCameraProvider, IProductCameraModelProvider, IProductCameraModelDetector
+    abstract class ProductCameraProvider<TCamera, TModel, TCard, TVersion> : DataProvider<Dictionary<string, TCamera>>, IProductCameraProvider
         where TCamera : CameraData<TCamera, TModel, TCard>
         where TModel : CameraModelData
         where TCard : CardData
@@ -30,23 +28,23 @@ namespace Net.Chdk.Providers.CameraModel
 
         private string ProductName { get; }
 
-        protected ProductCameraModelProvider(string productName)
+        protected ProductCameraProvider(string productName, ILogger logger)
+            : base(logger)
         {
             ProductName = productName;
-            _cameras = new Lazy<Dictionary<string, TCamera>>(GetCameras);
             _reverseCameras = new Lazy<Dictionary<string, ReverseCameraData>>(GetReverseCameras);
         }
 
-        SoftwareCameraInfo IProductCameraProvider.GetCamera(string productName, CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
+        public SoftwareCameraInfo GetCamera(string productName, CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
         {
-            if (!ProductName.Equals(productName, StringComparison.InvariantCulture))
+            if (!ProductName.Equals(productName, StringComparison.Ordinal))
                 return null;
 
             var camera = GetCamera(cameraInfo);
             if (camera == null)
                 return null;
 
-            var model = camera.Models.SingleOrDefault(m => m.Names[0].Equals(cameraModelInfo.Names[0], StringComparison.InvariantCulture));
+            var model = camera.Models.SingleOrDefault(m => m.Names[0].Equals(cameraModelInfo.Names[0], StringComparison.Ordinal));
             if (model == null)
                 return null;
 
@@ -59,15 +57,17 @@ namespace Net.Chdk.Providers.CameraModel
 
         protected abstract string GetRevision(CameraInfo cameraInfo, TModel model);
 
-        SoftwareEncodingInfo IProductCameraProvider.GetEncoding(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
+        public SoftwareEncodingInfo GetEncoding(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
         {
-            ReverseCameraData camera;
-            return GetCameraModel(productInfo?.Name, cameraInfo, out camera)
+            if (!ProductName.Equals(productInfo?.Name, StringComparison.Ordinal))
+                return null;
+
+            return GetCameraModel(cameraInfo, out ReverseCameraData camera)
                 ? camera.Encoding
                 : null;
         }
 
-        CameraModelsInfo IProductCameraModelProvider.GetCameraModels(CameraInfo cameraInfo)
+        public CameraModelsInfo GetCameraModels(CameraInfo cameraInfo)
         {
             var camera = GetCamera(cameraInfo);
             if (camera == null)
@@ -90,20 +90,15 @@ namespace Net.Chdk.Providers.CameraModel
             };
         }
 
-        CameraModels IProductCameraModelDetector.GetCameraModels(SoftwareInfo softwareInfo, IProgress<double> progress, CancellationToken token)
+        public CameraModelsInfo GetCameraModels(SoftwareCameraInfo cameraInfo)
         {
-            var productInfo = softwareInfo?.Product;
-            var cameraInfo = softwareInfo?.Camera;
-
-            ReverseCameraData camera;
-            if (!GetCameraModel(productInfo?.Name, cameraInfo, out camera))
+            if (!GetCameraModel(cameraInfo, out ReverseCameraData camera))
                 return null;
 
-            TVersion version;
-            if (!GetCamera(camera, cameraInfo, out version))
+            if (!GetCamera(camera, cameraInfo, out TVersion version))
                 return null;
 
-            return new CameraModels
+            return new CameraModelsInfo
             {
                 Info = new CameraInfo
                 {
@@ -146,19 +141,15 @@ namespace Net.Chdk.Providers.CameraModel
                 return null;
 
             var modelId = $"0x{cameraInfo.Canon.ModelId:x}";
-            TCamera camera;
-            if (!Cameras.TryGetValue(modelId, out camera))
+            if (!Data.TryGetValue(modelId, out TCamera camera))
                 return null;
 
             return camera;
         }
 
-        private bool GetCameraModel(string productName, SoftwareCameraInfo cameraInfo, out ReverseCameraData camera)
+        private bool GetCameraModel(SoftwareCameraInfo cameraInfo, out ReverseCameraData camera)
         {
             camera = null;
-
-            if (!ProductName.Equals(productName, StringComparison.InvariantCulture))
-                return false;
 
             if (cameraInfo == null)
                 return false;
@@ -166,24 +157,10 @@ namespace Net.Chdk.Providers.CameraModel
             return ReverseCameras.TryGetValue(cameraInfo.Platform, out camera);
         }
 
-        #region Cameras
-
-        private readonly Lazy<Dictionary<string, TCamera>> _cameras;
-
-        protected Dictionary<string, TCamera> Cameras => _cameras.Value;
-
-        private Dictionary<string, TCamera> GetCameras()
+        protected override string GetFilePath()
         {
-            var filePath = Path.Combine(Directories.Data, Directories.Product, ProductName, DataFileName);
-            using (var reader = File.OpenText(filePath))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                var serializer = JsonSerializer.CreateDefault();
-                return serializer.Deserialize<Dictionary<string, TCamera>>(jsonReader);
-            }
+            return Path.Combine(Directories.Data, Directories.Product, ProductName, DataFileName);
         }
-
-        #endregion
 
         #region ReverseCameras
 
@@ -194,7 +171,7 @@ namespace Net.Chdk.Providers.CameraModel
         private Dictionary<string, ReverseCameraData> GetReverseCameras()
         {
             var reverseCameras = new Dictionary<string, ReverseCameraData>();
-            foreach (var kvp in Cameras)
+            foreach (var kvp in Data)
             {
                 foreach (var model in kvp.Value.Models)
                 {

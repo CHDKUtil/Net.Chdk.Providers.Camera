@@ -1,23 +1,23 @@
-﻿using Net.Chdk.Meta.Model.Camera.Ps;
+﻿using Microsoft.Extensions.Logging;
+using Net.Chdk.Meta.Model.Camera.Ps;
 using Net.Chdk.Model.Camera;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Net.Chdk.Providers.CameraModel
+namespace Net.Chdk.Providers.Camera
 {
-    public abstract class PsCameraModelProvider : ProductCameraModelProvider<PsCameraData, PsCameraModelData, PsCardData, uint>
+    sealed class PsProductCameraProvider : ProductCameraProvider<PsCameraData, PsCameraModelData, PsCardData, uint>
     {
-        protected PsCameraModelProvider(string productName)
-            : base(productName)
+        public PsProductCameraProvider(string productName, ILoggerFactory loggerFactory)
+            : base(productName, loggerFactory.CreateLogger<PsProductCameraProvider>())
         {
         }
 
         protected override string GetRevision(CameraInfo cameraInfo, PsCameraModelData model)
         {
             var revisionStr = $"0x{cameraInfo.Canon.FirmwareRevision:x}";
-            RevisionData revision;
-            return model.Revisions.TryGetValue(revisionStr, out revision)
+            return model.Revisions.TryGetValue(revisionStr, out RevisionData revision)
                 ? revision.Revision
                 : null;
         }

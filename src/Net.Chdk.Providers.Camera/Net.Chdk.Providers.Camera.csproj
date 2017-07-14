@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <Description>CHIMP camera providers</Description>
+    <AssemblyName>Net.Chdk.Providers.Camera</AssemblyName>
+    <RootNamespace>Net.Chdk.Providers.Camera</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.2.0</Version>
+    <Product>CHIMP</Product>
+    <Copyright>Copyright © 2017 Dmitry Shechtman</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Net.Chdk.Providers.Camera</Title>
+    <PackageVersion>$(Version)-alpha</PackageVersion>
+    <Authors>Dmitry Shechtman</Authors>
+    <PackageIconUrl>https://raw.githubusercontent.com/CHDKUtil/CHIMP/master/tiny.png</PackageIconUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/CHDKUtil/Net.Chdk.Providers.Camera/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/CHDKUtil/Net.Chdk.Providers.Camera</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CHDKUtil/Net.Chdk.Providers.Camera</RepositoryUrl>
+    <PackageTags>chimp provider camera</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" Version="1.1.1" />
+    <PackageReference Include="microsoft.extensions.logging.abstractions" Version="1.1.2" />
+    <PackageReference Include="Net.Chdk.Core" Version="0.2.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Net.Chdk.Meta.Model.Camera" Version="0.1.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Eos" Version="0.1.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Ps" Version="0.1.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Net.Chdk.Model.Camera" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Model.CameraModel" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Model.Software" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Providers.Base" Version="0.1.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Net.Chdk.Providers.Camera.Core" Version="0.2.0-alpha" />
+    <PackageReference Include="Net.Chdk.Providers.Product.Core" Version="0.1.0-alpha">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
