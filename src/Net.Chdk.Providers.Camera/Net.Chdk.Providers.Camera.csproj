@@ -50,7 +50,7 @@
     <PackageReference Include="Net.Chdk.Meta.Model.Camera.Ps" Version="0.1.0-alpha">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Net.Chdk.Providers.Base" Version="0.1.0-alpha">
+    <PackageReference Include="Net.Chdk.Providers.Base" Version="0.2.0-alpha">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Net.Chdk.Providers.Camera.Core" Version="0.3.0-alpha" />
