@@ -36,7 +36,7 @@ namespace Net.Chdk.Providers.Camera
         public SoftwareCameraInfo GetCamera(string productName, CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
         {
             return GetProvider(productName)
-                .GetCamera(productName, cameraInfo, cameraModelInfo);
+                .GetCamera(cameraInfo, cameraModelInfo);
         }
 
         public SoftwareEncodingInfo GetEncoding(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)

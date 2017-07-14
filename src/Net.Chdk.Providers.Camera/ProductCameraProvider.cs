@@ -34,11 +34,8 @@ namespace Net.Chdk.Providers.Camera
             _reverseCameras = new Lazy<Dictionary<string, ReverseCameraData>>(GetReverseCameras);
         }
 
-        public SoftwareCameraInfo GetCamera(string productName, CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
+        public SoftwareCameraInfo GetCamera(CameraInfo cameraInfo, CameraModelInfo cameraModelInfo)
         {
-            if (!ProductName.Equals(productName, StringComparison.Ordinal))
-                return null;
-
             var camera = GetCamera(cameraInfo);
             if (camera == null)
                 return null;
