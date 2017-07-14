@@ -53,11 +53,8 @@ namespace Net.Chdk.Providers.Camera
 
         protected abstract string GetRevision(CameraInfo cameraInfo, TModel model);
 
-        public SoftwareEncodingInfo GetEncoding(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
+        public SoftwareEncodingInfo GetEncoding(SoftwareCameraInfo cameraInfo)
         {
-            if (!ProductName.Equals(productInfo?.Name, StringComparison.Ordinal))
-                return null;
-
             return GetCameraModel(cameraInfo, out ReverseCameraData camera)
                 ? camera.Encoding
                 : null;

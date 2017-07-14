@@ -43,7 +43,7 @@ namespace Net.Chdk.Providers.Camera
         {
             var productName = productInfo?.Name;
             return GetProvider(productName)
-                .GetEncoding(productInfo, cameraInfo);
+                .GetEncoding(cameraInfo);
         }
 
         protected override IEnumerable<string> GetNames()
