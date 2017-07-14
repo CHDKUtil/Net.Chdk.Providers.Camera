@@ -21,7 +21,7 @@ namespace Net.Chdk.Providers.Camera
 
         public CameraModelsInfo GetCameraModels(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
         {
-            var productName = productInfo.Name;
+            var productName = productInfo?.Name;
             return GetProvider(productName)
                 .GetCameraModels(cameraInfo);
         }
@@ -41,7 +41,7 @@ namespace Net.Chdk.Providers.Camera
 
         public SoftwareEncodingInfo GetEncoding(SoftwareProductInfo productInfo, SoftwareCameraInfo cameraInfo)
         {
-            var productName = productInfo.Name;
+            var productName = productInfo?.Name;
             return GetProvider(productName)
                 .GetEncoding(productInfo, cameraInfo);
         }
