@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Net.Chdk.Meta.Model.Camera.Ps;
 using Net.Chdk.Model.Camera;
+using Net.Chdk.Model.CameraModel;
 using Net.Chdk.Model.Software;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,13 @@ namespace Net.Chdk.Providers.Camera
             var reverse = base.CreateReverseCamera(key, camera, model);
             reverse.Revisions = GetRevisions(model);
             return reverse;
+        }
+
+        protected override CameraModelsInfo GetCameraModels(PsCameraData camera, CameraModelInfo[] models)
+        {
+            var cameraModels = base.GetCameraModels(camera, models);
+            cameraModels.IsMultiPartition = camera.Card?.Multi == true;
+            return cameraModels;
         }
 
         protected override SoftwareEncodingInfo GetEncoding(PsCameraData camera)

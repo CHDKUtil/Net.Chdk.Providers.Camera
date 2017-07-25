@@ -3,12 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <Description>CHIMP camera providers</Description>
-    <AssemblyName>Net.Chdk.Providers.Camera</AssemblyName>
     <RootNamespace>Net.Chdk.Providers.Camera</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.4.1</Version>
+    <Version>0.5.0</Version>
     <Product>CHIMP</Product>
     <Authors>Dmitry Shechtman</Authors>
     <Copyright>Copyright © 2017 Dmitry Shechtman</Copyright>
@@ -39,12 +38,11 @@
     <PackageReference Include="microsoft.extensions.dependencyinjection.abstractions" Version="1.1.1" />
     <PackageReference Include="microsoft.extensions.logging.abstractions" Version="1.1.2" />
     <PackageReference Include="Net.Chdk.Core" Version="0.3.0-alpha" />
-    <PackageReference Include="Net.Chdk.Meta.Model.Camera" Version="0.1.0-alpha" />
-    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Eos" Version="0.1.0-alpha" />
-    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Ps" Version="0.1.0-alpha" />
+    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Eos" Version="0.2.0-alpha" />
+    <PackageReference Include="Net.Chdk.Meta.Model.Camera.Ps" Version="0.2.0-alpha" />
     <PackageReference Include="Net.Chdk.Providers.Base" Version="0.2.0-alpha" />
-    <PackageReference Include="Net.Chdk.Providers.Camera.Core" Version="0.4.0-alpha" />
+    <PackageReference Include="Net.Chdk.Providers.Camera.Core" Version="0.5.0-alpha" />
     <PackageReference Include="Net.Chdk.Providers.Product.Core" Version="0.1.0-alpha" />
   </ItemGroup>
-
+  
 </Project>

@@ -10,11 +10,6 @@ namespace Net.Chdk.Providers.Camera
 {
     sealed class EosProductCameraProvider : ProductCameraProvider<EosCameraData, EosCameraModelData, EosCardData, EosReverseCameraData, Version>
     {
-        private static readonly SoftwareEncodingInfo EmptyEncoding = new SoftwareEncodingInfo
-        {
-            Name = string.Empty
-        };
-
         public EosProductCameraProvider(string productName, ILoggerFactory loggerFactory)
             : base(productName, loggerFactory.CreateLogger<EosProductCameraProvider>())
         {
@@ -56,7 +51,7 @@ namespace Net.Chdk.Providers.Camera
 
         protected override SoftwareEncodingInfo GetEncoding(EosCameraData camera)
         {
-            return EmptyEncoding;
+            return SoftwareEncodingInfo.Empty;
         }
 
         protected override AltInfo GetAlt(EosCameraData camera)
